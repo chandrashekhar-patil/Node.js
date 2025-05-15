@@ -3,13 +3,13 @@ import Joi from "joi";
 import db from "./db.js";
 
 const Validation = Joi.object({
- name: Joi.string()
-  .pattern(/^[A-Za-z ]+$/)
-  .required()
-  .messages({
-    "string.empty": "Name is required",
-    "string.pattern.base": "Name must contain only letters",
-  }),
+  name: Joi.string()
+    .pattern(/^[A-Za-z ]+$/)
+    .required()
+    .messages({
+      "string.empty": "Name is required",
+      "string.pattern.base": "Name must contain only letters",
+    }),
   email: Joi.string().email().required().messages({
     "string.empty": "Email is required",
     "string.email": "Invalid email format",
@@ -22,17 +22,14 @@ const Validation = Joi.object({
 
 const register = (req, res) => {
   const { name, email, password } = req.body;
-  let lowerEmail = "";
-  if (email) {
-    lowerEmail = email.toLowerCase();
-  }
+  const lowerEmail = email.toLowerCase();
 
   const { error } = Validation.validate({ name, email: lowerEmail, password });
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  bcrypt.hash(password, 5, (err, hashedPassword) => {
+  bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       return res.status(500).json({ message: "Error hashing password" });
     }
